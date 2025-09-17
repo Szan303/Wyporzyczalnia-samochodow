@@ -1,12 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿// importy 
+using Newtonsoft.Json;
 using System.Xml;
 #region SAMOCHOD
+// klasa samochód 
 class Samochod
 {
+    // deklaracja właściwości
     public string Marka { get; set; }
     public string Model { get; set; }
     public int Rok { get; set; }
     private decimal cenaZaDzien;
+    // sprawdzanie czy cena jest w poprawnym zakresie
     public decimal CenaZaDzien
     {
         get => cenaZaDzien;
@@ -22,15 +26,19 @@ class Samochod
             }
         }
     }
+    // konstruktor
     public Samochod(string marka, string model, int rok, decimal cenaZaDzien)
     {
+        // inicjalizacja właściwości
         Marka = marka;
         Model = model;
         Rok = rok;
         CenaZaDzien = cenaZaDzien;
     }
+    // metoda opisująca samochód
     public virtual string Opis() => $"Samochód: {Marka} {Model} ({Rok})";
 }
+// klasy dziedziczące po klasie Samochod
 class Osobowy : Samochod
 {
     public int LiczbaMiejsc { get; set; }
@@ -40,6 +48,7 @@ class Osobowy : Samochod
     {
         LiczbaMiejsc = liczbaMiejsc;
     }
+    // nadpisanie metody Opis
     public override string Opis() => base.Opis() + $", Typ: Osobowy, Liczba miejsc: {LiczbaMiejsc}, Cena: { CenaZaDzien}zł / dzień.";
 }
 class Dostawczy : Samochod
@@ -51,49 +60,64 @@ class Dostawczy : Samochod
     {
         LadownoscKG = ladownoscKG;
     }
+    // nadpisanie metody Opis
     public override string Opis() => base.Opis() + $", Typ: Dostawczy, Ładowność: {LadownoscKG}, Cena: { CenaZaDzien} zł / dzień.";
 }
 class Sportowy : Samochod
 {
+    
     public double Przyspieszenie { get; set; }
+    // konstruktor z wywołaniem konstruktora bazowego
     public Sportowy(string marka, string model, int rok, decimal cenaZaDzien, double
     przyspieszenie)
     : base(marka, model, rok, cenaZaDzien)
     {
         Przyspieszenie = przyspieszenie;
     }
+    // nadpisanie metody Opis
     public override string Opis() => base.Opis() + $", Typ: Sportowy, O-100: {Przyspieszenie}, Cena: { CenaZaDzien} zł / dzień.";
 }
 #endregion
 #region KLIENT
+// klasa klient
 class Klient
 {
+    // deklaracja właściwości
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Imie { get; set; }
     public string Nazwisko { get; set; }
     public string Telefon { get; set; }
+    // konstruktor
     public Klient(string imie, string nazwisko, string telefon)
     {
+        // inicjalizacja właściwości
         Imie = imie;
         Nazwisko = nazwisko;
         Telefon = telefon;
     }
+    // metoda zwracająca dane klienta w formacie tekstowym
     public string DaneKlienta() => $"{Id} - {Imie} {Nazwisko}, tel: {Telefon}.";
 }
 #endregion
+// klasa główna programu
 class Program
 {
+    // lista samochodów i klientów oraz ścieżki do plików JSON
     static List<Samochod> flota = new();
     static List<Klient> klienci = new();
     static string sciezkaDoPliku = "flota.json";
     static string sciezkaKlienci = "klienci.json";
     static void Main()
     {
+        // wczytanie danych z pliku przy starcie programu
         WczytajZPliku();
+        // pętla menu głównego
         while (true)
         {
+            // wyczyszczenie ekranu i wyświetlenie menu
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
+            // ASCII art samochodu
             Console.WriteLine(@"
       _______
       // ||\ \
@@ -120,6 +144,7 @@ ___\_/________\_/______
             Console.WriteLine("0. Wyjdź!");
             Console.Write("Opcja: ");
             var wybor = Console.ReadLine();
+            // obsługa wyboru użytkownika
             if (wybor == "1") { PokazAuta(); Pauza(); }
             else if (wybor == "2") { DodajAuto(); ZapiszDoPliku(); }
             else if (wybor == "3") ObliczKoszt();
@@ -130,6 +155,7 @@ ___\_/________\_/______
             else if (wybor == "0") break;
         }
     }
+    // metoda pauzy przed powrotem do menu poprostu menu znika i czeka na klawisz i powraca do menu
     static void Pauza()
     {
         Console.ForegroundColor = ConsoleColor.Green;
@@ -138,16 +164,20 @@ ___\_/________\_/______
         Console.ReadKey(true);
     }
     #region AUTA
+    // metody obsługujące samochody
     static void PokazAuta()
     {
+        // wyczyszczenie ekranu i wyświetlenie listy samochodów
         Console.Clear();
         Console.WriteLine("*** FLOTA ***");
         int i = 1;
         foreach (var a in flota)
             Console.WriteLine($"{i++}. {a.Opis()}");
     }
+    // metoda dodająca samochód do floty
     static void DodajAuto()
     {
+        // wczytanie danych samochodu od użytkownika
         Console.WriteLine("1. Osobowy 2. Dostawczy 3. Sportowy");
         Console.Write("Typ: ");
         int typ = int.Parse(Console.ReadLine());
@@ -163,30 +193,37 @@ ___\_/________\_/______
         {
             if (typ == 1)
             {
+                // wczytanie dodatkowej właściwości dla samochodu osobowego
                 Console.Write("Liczba miejsc: ");
                 int miejsca = int.Parse(Console.ReadLine());
                 flota.Add(new Osobowy(marka, model, rok, cena, miejsca));
             }
             else if (typ == 2)
             {
+                // wczytanie dodatkowej właściwości dla samochodu dostawczego
                 Console.Write("Ładowność: ");
                 int ladownosc = int.Parse(Console.ReadLine());
                 flota.Add(new Dostawczy(marka, model, rok, cena, ladownosc));
             }
             else if (typ == 3)
             {
+                // wczytanie dodatkowej właściwości dla samochodu sportowego
                 Console.Write("Przyśpieszenie: ");
                 double przyspieszenie = double.Parse(Console.ReadLine());
                 flota.Add(new Sportowy(marka, model, rok, cena, przyspieszenie));
             }
         }
+        // obsługa wyjątku ArgumentOutOfRangeException
         catch (ArgumentOutOfRangeException ex)
         {
+            // obługa błędu i wyświetlenie komunikatu
             Console.WriteLine($"Błąd: {ex.ParamName}");
         }
     }
+    // metoda obliczająca koszt wypożyczenia samochodu
     static void ObliczKoszt()
     {
+        // wyczyszczenie ekranu i wyświetlenie listy samochodów
         PokazAuta();
         Console.Write("Wybierz numer auta: ");
         var autoID = int.Parse(Console.ReadLine()) - 1;
@@ -197,8 +234,10 @@ ___\_/________\_/______
         decimal koszt = dni * cena;
         Console.WriteLine($" Koszt wypożyczenia: {koszt} zł");
     }
+    // metoda usuwająca samochód z floty
     static void UsunAuto()
     {
+        // wyczyszczenie ekranu i wyświetlenie listy samochodów
         PokazAuta();
         Console.Write("Podaj numer auta do usunięcia: ");
         int idx = int.Parse(Console.ReadLine()) - 1;
@@ -206,8 +245,10 @@ ___\_/________\_/______
         Console.WriteLine($"Usunięto {auto.Opis()}");
         flota.RemoveAt(idx);
     }
+    // metody do zapisu i odczytu danych z pliku JSON
     static void WczytajZPliku()
     {
+        // wczytanie danych z pliku JSON przy starcie programu
         if (File.Exists(sciezkaDoPliku))
         {
             var json = File.ReadAllText(sciezkaDoPliku);
@@ -231,12 +272,14 @@ ___\_/________\_/______
     }
     static void ZapiszDoPliku()
     {
+        // zapisanie danych do pliku JSON po każdej zmianie floty
         var json = JsonConvert.SerializeObject(flota, Newtonsoft.Json.Formatting.Indented,
         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
         File.WriteAllText(sciezkaDoPliku, json);
     }
     static void EdytujAuto()
     {
+        //  wyczyszczenie ekranu i wyświetlenie listy samochodów
         PokazAuta();
         Console.Write("Podaj numer auta do edycji: ");
         int idx = int.Parse(Console.ReadLine()) - 1;
@@ -275,6 +318,7 @@ ___\_/________\_/______
     }
     static void SzukajAuta()
     {
+        // wyczyszczenie ekranu i wyświetlenie menu wyszukiwania
         Console.WriteLine("\n *** Szukaj samochodu ***");
         Console.WriteLine("1. Po marce");
         Console.WriteLine("2. Po typie");
@@ -285,6 +329,7 @@ ___\_/________\_/______
         IEnumerable<Samochod> wynik = flota;
         switch (opcja)
         {
+            // różne opcje wyszukiwania
             case "1":
                 Console.Write("Podaj markę: ");
                 string marka = Console.ReadLine().ToLower();
@@ -338,10 +383,12 @@ ___\_/________\_/______
     }
     #endregion
     #region KLIENCI
+    // metody obsługujące klientów
     static void MenuKlienci()
     {
         while (true)
         {
+            // wyczyszczenie ekranu i wyświetlenie menu klientów
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.BackgroundColor = ConsoleColor.DarkYellow;
@@ -362,6 +409,7 @@ ___\_/________\_/______
     }
     static void DodajKlienta()
     {
+        //  wczytanie danych klienta od użytkownika
         Console.WriteLine("*** DODAJ KLIENTA ***");
         Console.Write("Imię: "); var imie = Console.ReadLine();
         Console.Write("Nazwisko: "); var nazwisko = Console.ReadLine();
@@ -371,12 +419,14 @@ ___\_/________\_/______
     }
     static void ZapiszKlientowDoPliku()
     {
+        // zapisanie danych klientów do pliku JSON po każdej zmianie
         var json = JsonConvert.SerializeObject(klienci, Newtonsoft.Json.Formatting.Indented,
         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
         File.WriteAllText(sciezkaKlienci, json);
     }
     static void ListaKlientow()
     {
+        // wyczyszczenie ekranu i wyświetlenie listy klientów
         Console.Clear();
         Console.WriteLine("*** LISTA KLIENTÓW ***");
         int i = 1;
