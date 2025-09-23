@@ -602,11 +602,6 @@ ___\_/________\_/______
     }
     static void ListaWyporzyczen()
     {
-        //Console.Clear();
-        //Console.WriteLine("*** FLOTA ***");
-        //int i = 1;
-        //foreach (var a in flota)
-        //    Console.WriteLine($"{i++}. {a.Opis()}");
         Console.Clear();
         Console.WriteLine("*** LISTA WYPOŻYCZEŃ ***");
         int i = 1;
