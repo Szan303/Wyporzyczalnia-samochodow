@@ -524,16 +524,14 @@ ___\_/________\_/______
             Console.WriteLine("=== Wyporzyczenia ===");
             Console.WriteLine("1. Nowe wypożyczenie");
             Console.WriteLine("2. Lista aktywnych wypożyczeń");
-            Console.WriteLine("3. ");
             Console.WriteLine("0. Powrót");
 
 
             Console.Write("Opcja: ");
             var wybor = Console.ReadLine();
-            if (wybor == "1") { NoweWyporzyczenie(); }
-            else if (wybor == "2") { ListaWyporzyczen(); }
-            else if (wybor == "3") { }
-            else if (wybor == "4") break;
+            if (wybor == "1") { NoweWyporzyczenie(); ZapiszDoPliku(); }
+            else if (wybor == "2") { ListaWyporzyczen(); Pauza(); }
+            else if (wybor == "0") break;
 
         }
     }
@@ -610,7 +608,7 @@ ___\_/________\_/______
         //foreach (var a in flota)
         //    Console.WriteLine($"{i++}. {a.Opis()}");
         Console.Clear();
-        Console.WriteLine("*** WYPOŻYCZENIA ***");
+        Console.WriteLine("*** LISTA WYPOŻYCZEŃ ***");
         int i = 1;
         var aktywne = wyporzyczenia.Where(w=>w.Status == StatusWyporzyczenia.Aktywne).ToList();
         if (!aktywne.Any())
@@ -627,7 +625,5 @@ ___\_/________\_/______
             
         }
     }
-
-
     #endregion
 }
