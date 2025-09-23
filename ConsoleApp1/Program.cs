@@ -300,6 +300,16 @@ ___\_/________\_/______
         {
             klienci = new List<Klient>();
         }
+        if (File.Exists(sciezkaWyporzyczenia))
+        {
+            var json = File.ReadAllText(sciezkaWyporzyczenia);
+            wyporzyczenia = JsonConvert.DeserializeObject<List<Wyporzyczenie>>(json,
+            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        }
+        else
+        {
+            wyporzyczenia = new List<Wyporzyczenie>();
+        }
     }
     static void ZapiszDoPliku()
     {
@@ -307,6 +317,10 @@ ___\_/________\_/______
         var json = JsonConvert.SerializeObject(flota, Newtonsoft.Json.Formatting.Indented,
         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
         File.WriteAllText(sciezkaDoPliku, json);
+        // zapisanie danych do pliku JSON po każdej zmianie wyporzyczeń
+        var json2 = JsonConvert.SerializeObject(wyporzyczenia, Newtonsoft.Json.Formatting.Indented,
+        new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        File.WriteAllText(sciezkaWyporzyczenia, json2);
     }
     static void EdytujAuto()
     {
@@ -561,6 +575,24 @@ ___\_/________\_/______
         {
             Console.WriteLine("Auto niedostępne w podanym terminie!");
         }
+        else
+        {
+            var w = new Wyporzyczenie
+            {
+                KlientId = klient.Id,
+                AutoId = auto.id,
+                DataOd = data_od,
+                DataDo = data_do,
+                Status = StatusWyporzyczenia.Aktywne,
+                CenaZaDzien = auto.CenaZaDzien
+            };
+
+            wyporzyczenia.Add(w);
+
+            Console.WriteLine("Utworzono wypożyczenie.");
+        }
+
+
     }
 
     static bool CzyAutoDostepne(Guid autoID, DateTime data_od, DateTime data_do)
@@ -572,7 +604,28 @@ ___\_/________\_/______
     }
     static void ListaWyporzyczen()
     {
-
+        //Console.Clear();
+        //Console.WriteLine("*** FLOTA ***");
+        //int i = 1;
+        //foreach (var a in flota)
+        //    Console.WriteLine($"{i++}. {a.Opis()}");
+        Console.Clear();
+        Console.WriteLine("*** WYPOŻYCZENIA ***");
+        int i = 1;
+        var aktywne = wyporzyczenia.Where(w=>w.Status == StatusWyporzyczenia.Aktywne).ToList();
+        if (!aktywne.Any())
+            {
+                Console.WriteLine("Brak aktywnych wypożyczeń!"); return;
+            }
+        foreach (var w in aktywne)
+        {
+            var k = klienci.FirstOrDefault(x => x.Id == w.KlientId);
+            var a = flota.FirstOrDefault(x => x.id == w.AutoId);
+            string klientNazwa = $"{k.Nazwisko} {k.Imie}";
+            string autoNazwa = $"{a.Marka} {a.Model}";
+            Console.WriteLine($"{i++}. [{w.Status}] {klientNazwa} - {autoNazwa} | {w.DataOd} - {w.DataDo}");
+            
+        }
     }
 
 
