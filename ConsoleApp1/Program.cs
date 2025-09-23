@@ -1,10 +1,11 @@
-﻿// importy 
+// importy 
 using Newtonsoft.Json;
 using System.Xml;
 #region SAMOCHOD
 // klasa samochód 
 class Samochod
 {
+    public Guid id {  get; set; } = Guid.NewGuid();
     // deklaracja właściwości
     public string Marka { get; set; }
     public string Model { get; set; }
@@ -49,7 +50,7 @@ class Osobowy : Samochod
         LiczbaMiejsc = liczbaMiejsc;
     }
     // nadpisanie metody Opis
-    public override string Opis() => base.Opis() + $", Typ: Osobowy, Liczba miejsc: {LiczbaMiejsc}, Cena: { CenaZaDzien}zł / dzień.";
+    public override string Opis() => base.Opis() + $", Typ: Osobowy, Liczba miejsc: {LiczbaMiejsc}, Cena: {CenaZaDzien}zł / dzień.";
 }
 class Dostawczy : Samochod
 {
@@ -61,11 +62,11 @@ class Dostawczy : Samochod
         LadownoscKG = ladownoscKG;
     }
     // nadpisanie metody Opis
-    public override string Opis() => base.Opis() + $", Typ: Dostawczy, Ładowność: {LadownoscKG}, Cena: { CenaZaDzien} zł / dzień.";
+    public override string Opis() => base.Opis() + $", Typ: Dostawczy, Ładowność: {LadownoscKG}, Cena: {CenaZaDzien} zł / dzień.";
 }
 class Sportowy : Samochod
 {
-    
+
     public double Przyspieszenie { get; set; }
     // konstruktor z wywołaniem konstruktora bazowego
     public Sportowy(string marka, string model, int rok, decimal cenaZaDzien, double
@@ -75,10 +76,11 @@ class Sportowy : Samochod
         Przyspieszenie = przyspieszenie;
     }
     // nadpisanie metody Opis
-    public override string Opis() => base.Opis() + $", Typ: Sportowy, O-100: {Przyspieszenie}, Cena: { CenaZaDzien} zł / dzień.";
+    public override string Opis() => base.Opis() + $", Typ: Sportowy, O-100: {Przyspieszenie}, Cena: {CenaZaDzien} zł / dzień.";
 }
 #endregion
 #region KLIENT
+
 // klasa klient
 class Klient
 {
@@ -99,14 +101,42 @@ class Klient
     public string DaneKlienta() => $"{Id} - {Imie} {Nazwisko}, tel: {Telefon}.";
 }
 #endregion
+#region Wyporzyczenia
+
+
+enum StatusWyporzyczenia { Aktywne, Zwrócone }
+class Wyporzyczenie
+{
+    public Guid id { get; set; } = Guid.NewGuid();
+    public Guid KlientId { get; set; }
+    public Guid AutoId { get; set; }
+    public DateTime DataOd { get; set; }
+    public DateTime DataDo { get; set; }
+    public StatusWyporzyczenia Status { get; set; } = StatusWyporzyczenia.Aktywne;
+    public decimal CenaZaDzien { get; set; }
+    public int Dni()
+    {
+        int dni = (int)(DataDo.Date - DataOd.Date).TotalDays;
+
+        if(dni == 0)
+        {
+            dni = 1;
+        }
+        return dni;
+    }
+
+}
+#endregion
 // klasa główna programu
 class Program
 {
     // lista samochodów i klientów oraz ścieżki do plików JSON
     static List<Samochod> flota = new();
     static List<Klient> klienci = new();
+    static List<Wyporzyczenie> wyporzyczenia = new();
     static string sciezkaDoPliku = "flota.json";
     static string sciezkaKlienci = "klienci.json";
+    static string sciezkaWyporzyczenia = "wyporzyczenia.json";
     static void Main()
     {
         // wczytanie danych z pliku przy starcie programu
@@ -152,6 +182,7 @@ ___\_/________\_/______
             else if (wybor == "5") { EdytujAuto(); ZapiszDoPliku(); }
             else if (wybor == "6") SzukajAuta();
             else if (wybor == "7") MenuKlienci();
+            else if (wybor == "8") MenuWyporzyczenia();
             else if (wybor == "0") break;
         }
     }
@@ -404,6 +435,8 @@ ___\_/________\_/______
             var wybor = Console.ReadLine();
             if (wybor == "1") { ListaKlientow(); Pauza(); }
             else if (wybor == "2") { DodajKlienta(); ZapiszKlientowDoPliku(); }
+            else if (wybor == "3") { EdytujKlienta(); ZapiszKlientowDoPliku(); Pauza(); }
+            else if (wybor == "4") { UsunKlienta(); ZapiszKlientowDoPliku(); Pauza(); }
             else if (wybor == "0") break;
         }
     }
@@ -433,5 +466,115 @@ ___\_/________\_/______
         foreach (var k in klienci)
             Console.WriteLine($"{i++}. {k.DaneKlienta()}");
     }
+    static void EdytujKlienta()
+    {
+        Console.Clear();
+        Console.WriteLine("*** EDYCJA KLIENTÓW");
+        ListaKlientow();
+        Console.WriteLine("Podaj numer klienta do edycji");
+        int idx = int.Parse(Console.ReadLine()) - 1;
+        var klient = klienci[idx];
+        Console.WriteLine($"\n Edytujesz: {klient.Nazwisko} {klient.Imie} ");
+        Console.WriteLine($"Imie ({klient.Imie}): ");
+        string imie = Console.ReadLine();
+        klient.Imie = imie;
+        Console.WriteLine($"Nazwisko ({klient.Nazwisko}): ");
+        string nazwisko = Console.ReadLine();
+        klient.Nazwisko = nazwisko;
+        Console.WriteLine($"Numer telefonu ({klient.Telefon}): ");
+        string telefon = Console.ReadLine();
+        klient.Telefon = telefon;
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Zaktualizowano!");
+        Console.ResetColor();
+
+    }
+    static void UsunKlienta()
+    {
+        Console.Clear();
+
+        ListaKlientow();
+        Console.WriteLine("Podaj numer klienta do usunięcia: ");
+        int idx = int.Parse(Console.ReadLine()) - 1;
+        var klient = klienci[idx];
+        Console.WriteLine($"Usunięto {klient.Id}");
+        klienci.RemoveAt(idx);
+    }
+    #endregion
+    #region WYPOŻYCZENIA
+    static void MenuWyporzyczenia()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("=== Wyporzyczenia ===");
+            Console.WriteLine("1. Nowe wypożyczenie");
+            Console.WriteLine("2. Lista aktywnych wypożyczeń");
+            Console.WriteLine("3. ");
+            Console.WriteLine("0. Powrót");
+
+
+            Console.Write("Opcja: ");
+            var wybor = Console.ReadLine();
+            if (wybor == "1") { NoweWyporzyczenie(); }
+            else if (wybor == "2") { ListaWyporzyczen(); }
+            else if (wybor == "3") { }
+            else if (wybor == "4") break;
+
+        }
+    }
+    static void NoweWyporzyczenie()
+    {
+        Console.Clear();
+        if (!klienci.Any())
+        {
+            Console.WriteLine("Brak klientów!"); return;
+        }
+        if (!flota.Any())
+        {
+            Console.WriteLine("Brak samochodów!"); return;
+        }
+
+        //Console.WriteLine("*** DODAJ WYPORZYCZENIE ***");
+        ListaKlientow();
+        Console.Write("Numer klienta: ");
+        int kid = int.Parse(Console.ReadLine());
+        var klient = klienci[kid];
+        
+        PokazAuta();
+        Console.Write("Numer auta: ");
+        int aid = int.Parse(Console.ReadLine());
+
+        var auto = flota[aid];
+
+        Console.Write("Data od (YYYY-MM-DD): ");
+        DateTime data_od = DateTime.Parse(Console.ReadLine());
+
+        Console.Write("Data do (YYYY-MM-DD): ");
+        DateTime data_do = DateTime.Parse(Console.ReadLine());
+
+        if (data_do < data_od)
+        {
+            Console.WriteLine("Data DO nie może być wcześniej niż OD!"); return;
+        }
+        if(!CzyAutoDostepne(auto.id, data_od, data_do))
+        {
+            Console.WriteLine("Auto niedostępne w podanym terminie!");
+        }
+    }
+
+    static bool CzyAutoDostepne(Guid autoID, DateTime data_od, DateTime data_do)
+    {
+        return !wyporzyczenia.Any(w => w.AutoId == autoID &&
+        w.Status == StatusWyporzyczenia.Aktywne &&
+        !(data_do.Date < w.DataOd.Date ||
+                data_od > w.DataDo.Date));
+    }
+    static void ListaWyporzyczen()
+    {
+
+    }
+
+
     #endregion
 }
