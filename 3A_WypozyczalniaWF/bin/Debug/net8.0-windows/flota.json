@@ -1,0 +1,23 @@
+{
+  "$type": "System.ComponentModel.BindingList`1[[_3A_WypozyczalniaWF.Models.Samochod, 3A_WypozyczalniaWF]], System.ComponentModel.TypeConverter",
+  "$values": [
+    {
+      "$type": "_3A_WypozyczalniaWF.Models.Osobowy, 3A_WypozyczalniaWF",
+      "LiczbaMiejsc": 5,
+      "id": "66c47be8-8c76-4878-b3ca-5c56b3cc82df",
+      "Marka": "Toyota",
+      "Model": "Yaris",
+      "Rok": 2021,
+      "CenaZaDzien": 150.0
+    },
+    {
+      "$type": "_3A_WypozyczalniaWF.Models.Dostawczy, 3A_WypozyczalniaWF",
+      "LadownoscKG": 1500,
+      "id": "70c66952-4a2f-46d5-a808-be693fbca06c",
+      "Marka": "Ford",
+      "Model": "Transit",
+      "Rok": 2019,
+      "CenaZaDzien": 200.0
+    }
+  ]
+}
