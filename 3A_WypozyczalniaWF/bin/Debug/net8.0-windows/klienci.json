@@ -1,0 +1,19 @@
+{
+  "$type": "System.ComponentModel.BindingList`1[[_3A_WypozyczalniaWF.Models.Klient, 3A_WypozyczalniaWF]], System.ComponentModel.TypeConverter",
+  "$values": [
+    {
+      "$type": "_3A_WypozyczalniaWF.Models.Klient, 3A_WypozyczalniaWF",
+      "Id": "d7473a09-8ca6-4352-a140-c14bd51a97b1",
+      "Imie": "krzysztof",
+      "Nazwisko": "pinda",
+      "Telefon": "848932"
+    },
+    {
+      "$type": "_3A_WypozyczalniaWF.Models.Klient, 3A_WypozyczalniaWF",
+      "Id": "d2c14d5c-adae-4f46-b371-87910d9ec21d",
+      "Imie": "benger",
+      "Nazwisko": "bana",
+      "Telefon": "485492131"
+    }
+  ]
+}
